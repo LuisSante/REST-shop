@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
 import {
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsString,
@@ -35,4 +37,8 @@ export class CreateAuthDto {
   @IsNumber()
   @Min(0)
   age: number;
+
+  @ApiProperty({ enum: Role, default: Role.CLIENT })
+  @IsEnum(Role)
+  role: Role;
 }

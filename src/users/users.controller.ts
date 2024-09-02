@@ -13,10 +13,10 @@ export class UsersController {
     return this.usersService.getUsers();
   }
 
-  @Get('/search/:username')
+  @Get('/search/:email')
   @HttpCode(HttpStatus.OK)
   @HttpCode(404)
-  getUser(@Param('username') username: string) {
-    return this.usersService.findOne(username);
+  getUser(@Param('email') email: string) {
+    return this.usersService.findOne(email);
   }
 }

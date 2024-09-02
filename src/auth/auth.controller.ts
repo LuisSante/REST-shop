@@ -17,16 +17,23 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
-  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { AuthSignIn } from './entities/auth.entity';
 
 @Controller('/auth')
 @ApiTags('Auth')
 @ApiResponse({ status: 401, description: 'Unauthorized' })
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
+
+  @HttpCode(HttpStatus.CREATED)
+  @Post('/signup')
+  @ApiOperation({ summary: 'User registration' })
+  signUp(@Body() user: CreateAuthDto) {
+    return this.authService.signUp(user);
+  }
 
   @HttpCode(HttpStatus.OK)
   @Post('/signin')
@@ -37,34 +44,10 @@ export class AuthController {
   })
   @ApiBody({
     description: 'Login credentials',
-    type: CreateAuthDto,
+    type: AuthSignIn,
   })
   signIn(@Body() user: Record<string, any>) {
-    return this.authService.singIn(user.username, user.password);
-  }
-
-  @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
-  @Get('profile')
-  @ApiOperation({ summary: 'Get user profile' })
-  @ApiBody({
-    description: 'Login credentials',
-    type: CreateAuthDto,
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'User profile retrieved successfully',
-  })
-  @ApiBearerAuth()
-  getProfile(@Request() req) {
-    return req.user;
-  }
-
-  @HttpCode(HttpStatus.OK)
-  @Post('/signup')
-  @ApiOperation({ summary: 'User registration' })
-  signUp(@Body() user: CreateAuthDto) {
-    return this.authService.signUp(user);
+    return this.authService.singIn(user.email, user.password);
   }
 
   @HttpCode(HttpStatus.OK)
@@ -81,5 +64,18 @@ export class AuthController {
     this.authService.signOut(token);
 
     return {};
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  @Get('profile')
+  @ApiOperation({ summary: 'Get user profile' })
+  @ApiResponse({
+    status: 200,
+    description: 'User profile retrieved successfully',
+  })
+  @ApiBearerAuth()
+  getProfile(@Request() req) {
+    return req.user;
   }
 }

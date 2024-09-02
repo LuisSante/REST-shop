@@ -24,18 +24,17 @@ export class AuthService {
   }
 
   async singIn(
-    username: string,
+    email: string,
     password: string,
   ): Promise<{ access_token: string }> {
-    const user = await this.usersService.findOne(username);
+    const user = await this.usersService.findOne(email);
     const isMatch = await bcrypt.compare(password, user?.password);
 
     if (!isMatch) {
       throw new UnauthorizedException();
     }
 
-    const payload = { username: user.username };
-
+    const payload = { email: user.email, role: user.role };
     return {
       access_token: await this.jwtService.signAsync(payload),
     };
