@@ -40,4 +40,18 @@ export class AuthService {
       access_token: await this.jwtService.signAsync(payload),
     };
   }
+
+  async signOut(token: string): Promise<void> {
+    await this.prisma.revokedToken.create({
+      data: { token },
+    });
+  }
+
+  async isTokenRevoked(token: string): Promise<boolean> {
+    const revokedToken = await this.prisma.revokedToken.findUnique({
+      where: { token },
+    });
+
+    return !!revokedToken;
+  }
 }

@@ -25,3 +25,9 @@ model User {
   updateAt DateTime @updatedAt
 }
 
+model RevokedToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  
+  createdAt DateTime @default(now())
+}
