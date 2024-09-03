@@ -18,6 +18,12 @@ enum Role {
   CLIENT
 }
 
+enum OrderStatus {
+  PENDING // Order has been created
+  COMPLETED // A product was bought
+  CANCELED // Order has been cancelled
+}
+
 model User {
   id String @id @default(cuid())
   name String?
@@ -25,7 +31,10 @@ model User {
   email String @unique
   password String
   age Int
+
   role Role @default(CLIENT)
+  likes Like[]
+  orders Order[]
 
   createdAt DateTime @default(now())
   updateAt DateTime @updatedAt
@@ -36,4 +45,83 @@ model RevokedToken {
   token     String   @unique
   
   createdAt DateTime @default(now())
+}
+
+
+model Product {
+  id String @id @default(cuid())
+  name String
+  description String
+  price Float
+  stockQuantity Int @default(0)
+  category String 
+  brand String
+  rating Float @default(0.0)
+  tags String[]
+  size String?
+  countryOfOrigin String
+  isDisabled Boolean @default(false)
+  
+  images Image[]
+  ordersItems OrderItem[]
+  likes Like[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Image {
+  id String @id @default(cuid())
+  url String
+  productId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model Like {
+  id String @id @default(cuid())
+  userId String
+  productId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relation 
+  user User @relation(fields: [userId] , references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  // One like object
+  @@unique([userId, productId])
+}
+
+model Order {
+  id String @id @default(cuid())
+  userId String
+  total Float
+
+  items OrderItem[]
+  status OrderStatus
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // relations
+  user User @relation(fields: [userId], references: [id])
+}
+
+model OrderItem {
+  id String @id @default(cuid())
+  productId String
+  orderId String
+  quantity Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  product Product @relation(fields:[productId], references: [id])
+  order Order @relation(fields: [orderId], references: [id])
 }
