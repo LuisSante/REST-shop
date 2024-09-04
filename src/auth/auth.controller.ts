@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { AuthGuard } from './guard/auth.guard';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -21,6 +20,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthSignIn } from './entities/auth.entity';
+import { JwtAuthGuard } from './guard/jwt-auth.guard';
 
 @Controller('/auth')
 @ApiTags('Auth')
@@ -51,7 +51,7 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Delete('/singout')
   @ApiOperation({ summary: 'User logout' })
   @ApiResponse({ status: 200, description: 'Successfully signed out' })
@@ -67,7 +67,7 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('profile')
   @ApiOperation({ summary: 'Get user profile' })
   @ApiResponse({
